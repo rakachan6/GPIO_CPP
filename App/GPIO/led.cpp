@@ -6,17 +6,20 @@ enum class Active_level
     low,
     high
 };
+
+template<uint16_t pin_mask>
 class Led
 {
+    static_assert((pin_mask != 0U) &&
+                    (pin_mask & (pin_mask - 1)) == 0);
 public:
     Led(GPIO_TypeDef* port,
-        uint16_t pin,
         Active_level level = Active_level::high) :
-    port_(port), pin_(pin), active_level_(level) {}
+    port_(port), active_level_(level) {}
     void on()
     {
         HAL_GPIO_WritePin(
-            port_, pin_,
+            port_, pin_mask,
             active_level_ == Active_level::high
                 ? GPIO_PIN_SET
                 : GPIO_PIN_RESET);
@@ -25,7 +28,7 @@ public:
     void off()
     {
         HAL_GPIO_WritePin(
-            port_, pin_,
+            port_, pin_mask,
             active_level_ == Active_level::high
                 ? GPIO_PIN_RESET
                 : GPIO_PIN_SET);
@@ -33,17 +36,18 @@ public:
 
     void toggle()
     {
-        HAL_GPIO_TogglePin(port_, pin_);
+        HAL_GPIO_TogglePin(port_, pin_mask);
     }
 private:
     GPIO_TypeDef* port_;
-    const uint16_t pin_;
     const Active_level active_level_;
 };
 
 extern "C" void app_run(void)
 {
-    Led led_PC13(GPIOC, GPIO_PIN_13, Active_level::low);
+    //Led<0> led_zero(GPIOC);
+    //Led<GPIO_PIN_1 | GPIO_PIN_2> led_double(GPIOC);
+    Led<GPIO_PIN_13> led_PC13(GPIOC, Active_level::low);
     led_PC13.off();
     while (1)
     {
