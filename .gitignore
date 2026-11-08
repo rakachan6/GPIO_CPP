@@ -1,0 +1,15 @@
+# CMake build output
+/build/
+/cmake-build-*/
+
+# IDE local settings
+.idea/
+.vscode
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+
+# Python cache
+__pycache__/
