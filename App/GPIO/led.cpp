@@ -1,4 +1,7 @@
 #include "led.h"
+
+#include <assert.h>
+
 #include "stm32f4xx.h"
 
 enum class Active_level
@@ -11,12 +14,16 @@ template<uint16_t pin_mask>
 class Led
 {
     static_assert((pin_mask != 0U) &&
-                    (pin_mask & (pin_mask - 1)) == 0);
+                    ((pin_mask & (pin_mask - 1)) == 0),
+                    "Led requires exacly one GPIO pin");
 public:
-    Led(GPIO_TypeDef* port,
-        Active_level level = Active_level::high) :
-    port_(port), active_level_(level) {}
-    void on()
+    explicit Led(GPIO_TypeDef* port,
+        Active_level level = Active_level::high) noexcept :
+    port_(port), active_level_(level)
+    {
+        assert(port_ != nullptr);
+    }
+    void on() noexcept
     {
         HAL_GPIO_WritePin(
             port_, pin_mask,
@@ -25,7 +32,7 @@ public:
                 : GPIO_PIN_RESET);
     }
 
-    void off()
+    void off() noexcept
     {
         HAL_GPIO_WritePin(
             port_, pin_mask,
@@ -34,7 +41,7 @@ public:
                 : GPIO_PIN_SET);
     }
 
-    void toggle()
+    void toggle() noexcept
     {
         HAL_GPIO_TogglePin(port_, pin_mask);
     }
