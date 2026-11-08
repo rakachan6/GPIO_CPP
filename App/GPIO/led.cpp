@@ -37,15 +37,16 @@ public:
     }
 private:
     GPIO_TypeDef* port_;
-    uint16_t pin_;
-    Active_level active_level_;
+    const uint16_t pin_;
+    const Active_level active_level_;
 };
 
 extern "C" void app_run(void)
 {
+    Led led_PC13(GPIOC, GPIO_PIN_13, Active_level::low);
+    led_PC13.off();
     while (1)
     {
-        Led led_PC13(GPIOC, GPIO_PIN_13);
         led_PC13.on();
         HAL_Delay(1000);
         led_PC13.off();
