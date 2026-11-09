@@ -33,7 +33,10 @@ enable_language(C CXX ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-        App/GPIO/led.cpp)
+        App/GPIO/led.cpp
+        App/UART/uart.cpp
+        App/RingBuffer/ringbuffer.cpp
+        App/RingBuffer/ringbuffer.h)
 
 # Set C++ compile standard
 target_compile_features(GPIO_CPP PRIVATE cxx_std_17)
@@ -55,6 +58,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
         App/GPIO/
+        App/UART/
 )
 
 # Add project symbols (macros)
