@@ -1,6 +1,6 @@
 #include "led.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "stm32f4xx.h"
 
@@ -15,7 +15,7 @@ class Led
 {
     static_assert((pin_mask != 0U) &&
                     ((pin_mask & (pin_mask - 1)) == 0),
-                    "Led requires exacly one GPIO pin");
+                    "Led requires exactly one GPIO pin");
 public:
     explicit Led(GPIO_TypeDef* port,
         Active_level level = Active_level::high) noexcept :
@@ -23,7 +23,7 @@ public:
     {
         assert(port_ != nullptr);
     }
-    void on() noexcept
+    void on() const noexcept
     {
         HAL_GPIO_WritePin(
             port_, pin_mask,
@@ -32,7 +32,7 @@ public:
                 : GPIO_PIN_RESET);
     }
 
-    void off() noexcept
+    void off() const noexcept
     {
         HAL_GPIO_WritePin(
             port_, pin_mask,
@@ -41,7 +41,7 @@ public:
                 : GPIO_PIN_SET);
     }
 
-    void toggle() noexcept
+    void toggle() const noexcept
     {
         HAL_GPIO_TogglePin(port_, pin_mask);
     }
@@ -50,14 +50,65 @@ private:
     const Active_level active_level_;
 };
 
+template<typename Led_type>
+class Blinker
+{
+public:
+    explicit Blinker(
+        Led_type& led,
+        uint32_t interval_ms = 500) :
+        led_(led), interval_ms_(interval_ms)
+    {
+        assert(interval_ms_ < 6000);
+    }
+
+    void start(uint32_t now)
+    {
+        start_time_ = now;
+        is_running_ = true;
+    }
+    void stop()
+    {
+        is_running_ = false;
+    }
+    bool update(uint32_t now)
+    {
+        if (is_running_)
+        {
+            if ((now - start_time_) >= interval_ms_)
+            {
+                led_.toggle();
+                start_time_ = now;
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+    bool is_running() const
+    {
+        return is_running_;
+    }
+private:
+    Led_type led_;
+    uint32_t interval_ms_;
+    uint32_t start_time_ = 0;
+    bool is_running_ = false;
+};
+
 extern "C" void app_run(void)
 {
     //Led<0> led_zero(GPIOC);
     //Led<GPIO_PIN_1 | GPIO_PIN_2> led_double(GPIOC);
     Led<GPIO_PIN_13> led_PC13(GPIOC, Active_level::low);
-    led_PC13.off();
-    while (1)
+    Blinker<Led<GPIO_PIN_13>> blinker(led_PC13, 200);
+
+    blinker.start(HAL_GetTick());
+    while (true)
     {
+        /*
         led_PC13.on();
         HAL_Delay(1000);
         led_PC13.off();
@@ -67,5 +118,7 @@ extern "C" void app_run(void)
             led_PC13.toggle();
             HAL_Delay(500);
         }
+        */
+        blinker.update(HAL_GetTick());
     }
 }
