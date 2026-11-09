@@ -59,16 +59,18 @@ public:
         uint32_t interval_ms = 500) :
         led_(led), interval_ms_(interval_ms)
     {
-        assert(interval_ms_ < 6000);
+        assert((interval_ms_ > 0U) && (interval_ms_ <= 60000U));
     }
 
     void start(uint32_t now)
     {
+        led_.off();
         start_time_ = now;
         is_running_ = true;
     }
     void stop()
     {
+        led_.off();
         is_running_ = false;
     }
     bool update(uint32_t now)
@@ -92,7 +94,7 @@ public:
         return is_running_;
     }
 private:
-    Led_type led_;
+    Led_type& led_;
     uint32_t interval_ms_;
     uint32_t start_time_ = 0;
     bool is_running_ = false;
@@ -100,25 +102,12 @@ private:
 
 extern "C" void app_run(void)
 {
-    //Led<0> led_zero(GPIOC);
-    //Led<GPIO_PIN_1 | GPIO_PIN_2> led_double(GPIOC);
     Led<GPIO_PIN_13> led_PC13(GPIOC, Active_level::low);
     Blinker<Led<GPIO_PIN_13>> blinker(led_PC13, 200);
 
     blinker.start(HAL_GetTick());
     while (true)
     {
-        /*
-        led_PC13.on();
-        HAL_Delay(1000);
-        led_PC13.off();
-        HAL_Delay(1000);
-        for (uint8_t i = 0; i < 6; i++)
-        {
-            led_PC13.toggle();
-            HAL_Delay(500);
-        }
-        */
         blinker.update(HAL_GetTick());
     }
 }
