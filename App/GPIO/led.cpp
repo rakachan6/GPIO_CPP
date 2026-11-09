@@ -65,7 +65,7 @@ public:
     void start(uint32_t now)
     {
         led_.off();
-        start_time_ = now;
+        last_switch_time_ = now;
         is_running_ = true;
     }
     void stop()
@@ -75,16 +75,14 @@ public:
     }
     bool update(uint32_t now)
     {
-        if (is_running_)
+        if (!is_running_)
+            return false;
+
+        if ((now - last_switch_time_) >= interval_ms_)
         {
-            if ((now - start_time_) >= interval_ms_)
-            {
-                led_.toggle();
-                start_time_ = now;
-                return true;
-            }
-            else
-                return false;
+            led_.toggle();
+            last_switch_time_ = now;
+            return true;
         }
         else
             return false;
@@ -96,7 +94,7 @@ public:
 private:
     Led_type& led_;
     uint32_t interval_ms_;
-    uint32_t start_time_ = 0;
+    uint32_t last_switch_time_ = 0;
     bool is_running_ = false;
 };
 
