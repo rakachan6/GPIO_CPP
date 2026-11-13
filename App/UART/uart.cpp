@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "stm32f4xx.h"
 
-uint8_t data[UART_DATA_SIZE];
+
 bool is_received = false;
 
 extern "C" void RxCpltCallback(UART_HandleTypeDef *huart)

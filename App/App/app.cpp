@@ -36,6 +36,7 @@ void str_proc()
                 status? "ON" : "OFF", interval_ms);
         uart1.transmit_it((uint8_t*)message, len);
     }
+    is_received = false;
 }
 
 void app_main_while()
