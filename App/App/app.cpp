@@ -1,0 +1,49 @@
+#include "cstdint"
+#include "cstring"
+#include "iostream"
+#include "app.h"
+#include "led.h"
+#include "uart.h"
+
+extern UART_HandleTypeDef huart1;
+
+extern uint8_t data[UART_DATA_SIZE];
+extern bool is_received;
+
+Led<GPIO_PIN_13> led(GPIOC, Active_level::low);
+Blinker<Led<GPIO_PIN_13>> blinker(led, 500U);
+Uart uart1(huart1);
+
+char message[64];
+
+void str_proc()
+{
+    if (!strncmp((char*)data, "1", 1))
+        blinker.start(HAL_GetTick());
+    else if (!strncmp((char*)data, "0", 1))
+        blinker.stop();
+    else if (!strncmp((char*)data, "+", 1))
+        blinker.inc_interval(100U);
+    else if (!strncmp((char*)data, "-", 1))
+        blinker.dec_interval(100U);
+    else if (!strncmp((char*)data, "?", 1))
+    {
+        uint32_t interval_ms = blinker.get_interval_ms();
+        bool status = blinker.is_running();
+        uint8_t len;
+        len = snprintf(message, sizeof(message),
+                "LED: %s, interval: %lu ms\r\n",
+                status? "ON" : "OFF", interval_ms);
+        uart1.transmit_it((uint8_t*)message, len);
+    }
+}
+
+void app_main_while()
+{
+    blinker.update(HAL_GetTick());
+
+    if (is_received) // UART received command
+    {
+        str_proc();
+    }
+}
