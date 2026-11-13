@@ -6,7 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+void app_init(void);
 void app_main_while(void);
 
 #ifdef __cplusplus

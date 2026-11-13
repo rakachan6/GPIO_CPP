@@ -4,6 +4,7 @@
 #include "app.h"
 #include "led.h"
 #include "uart.h"
+#include "main.h"
 
 extern UART_HandleTypeDef huart1;
 
@@ -37,6 +38,7 @@ void str_proc()
         uart1.transmit_it((uint8_t*)message, len);
     }
     is_received = false;
+
 }
 
 void app_main_while()
@@ -47,4 +49,10 @@ void app_main_while()
     {
         str_proc();
     }
+}
+
+void app_init(void)
+{
+    if (uart1.start_receive_to_idle_it(data, UART_DATA_SIZE) != HAL_OK)
+        Error_Handler();
 }

@@ -3,7 +3,6 @@
 #include "stm32f4xx_hal.h"
 
 const uint16_t UART_DATA_SIZE = 256U;
-uint8_t data[UART_DATA_SIZE];
 
 class Uart {
 public:
