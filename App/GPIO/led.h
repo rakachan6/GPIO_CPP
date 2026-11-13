@@ -92,14 +92,14 @@ public:
     }
     bool inc_interval(uint8_t inc_ms)
     {
-        if (interval_ms_ > 5900U)
+        if (interval_ms_ >= 5900U)
             return false;
         interval_ms_ += inc_ms;
         return true;
     }
     bool dec_interval(uint8_t dec_ms)
     {
-        if (interval_ms_ < 200)
+        if (interval_ms_ <= 200U)
             return false;
         interval_ms_ -= dec_ms;
         return true;

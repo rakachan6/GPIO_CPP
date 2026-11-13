@@ -15,6 +15,6 @@ extern "C" void RxCpltCallback(UART_HandleTypeDef *huart)
 
 extern "C" void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-    HAL_UARTEx_ReceiveToIdle_IT(huart, data, UART_DATA_SIZE);
+
     is_received = true;
 }
