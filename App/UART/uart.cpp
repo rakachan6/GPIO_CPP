@@ -1,38 +1,14 @@
+#include "uart.h"
+
 #include <cstddef>
 #include <cstdint>
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
 
-class Uart {
-public:
-    explicit Uart(UART_HandleTypeDef& huart) noexcept : huart_(huart) {}
+uint8_t data[UART_DATA_SIZE];
+bool is_received = false;
 
-    Uart(const Uart&) = delete;
-    Uart& operator=(const Uart&) = delete;
-    ~Uart()
-    {
-        HAL_UART_DeInit(&huart_);
-    }
-
-    HAL_StatusTypeDef transmit_blocking(
-        std::uint8_t* data, std::size_t size, std::uint32_t timeout_ms) const
-    {
-        if (data == nullptr || size == 0 || size > UINT16_MAX)
-            return HAL_ERROR;
-
-        return HAL_UART_Transmit(
-            &huart_, data, static_cast<std::uint16_t>(size), timeout_ms);
-    }
-
-    HAL_StatusTypeDef start_transmit_it(
-        std::uint8_t* data, std::size_t size) const
-    {
-        if (data == nullptr || size == 0 || size > UINT16_MAX)
-            return HAL_ERROR;
-
-        return HAL_UART_Transmit_IT(
-            &huart_, data, static_cast<std::uint16_t>(size));
-    }
-
-private:
-    UART_HandleTypeDef& huart_;
-};
+extern "C" void RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_UARTEx_ReceiveToIdle_IT(huart, data, sizeof(data));
+    is_received = true;
+}
