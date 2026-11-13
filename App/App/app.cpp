@@ -20,15 +20,9 @@ char message[64];
 void str_proc()
 {
     if (!strncmp((char*)data, "1", 1))
-    {
         blinker.start(HAL_GetTick());
-        uart1.transmit_it((uint8_t*)"ON\r\n", 4U);
-    }
     else if (!strncmp((char*)data, "0", 1))
-    {
         blinker.stop();
-        uart1.transmit_it((uint8_t*)"OFF\r\n", 4U);
-    }
     else if (!strncmp((char*)data, "+", 1))
     {
         if (blinker.inc_interval(100U) == false)
@@ -50,7 +44,9 @@ void str_proc()
         uart1.transmit_it((uint8_t*)message, len);
     }
     is_received = false;
-    uart1.start_receive_to_idle_it(data, UART_DATA_SIZE);
+
+    if (uart1.start_receive_to_idle_it(data, UART_DATA_SIZE) != HAL_OK)
+        Error_Handler();
 }
 
 void app_main_while()
