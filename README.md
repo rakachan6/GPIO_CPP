@@ -16,17 +16,16 @@ Send one command at a time. Send `?` to check the current settings.
 
 | Command | Action |
 | --- | --- |
-| `1` | Start blinking. |
+| `2` | Start flash blinking|
+| `1` | Start steady blinking. |
 | `0` | Stop blinking and turn the LED off. |
-| `+` | Increase the toggle interval by 100 ms. |
-| `-` | Decrease the toggle interval by 100 ms. |
-| `?` | Show whether blinking is enabled and report the current toggle interval. |
 
 ## Clock configuration
 The core clock is configured to the maximum frequency (100 MHz).
 
 ## Hardware
 - **Board:** Black Pill with an STM32F411CEU6 MCU.
+- **USB to UART controller:** FT-232.  
 
 ## Firmware behavior
 On startup, the LED on PC13 begins blinking, toggling every 500 ms

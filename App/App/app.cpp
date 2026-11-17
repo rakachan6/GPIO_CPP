@@ -1,5 +1,4 @@
 #include "cstdint"
-#include "cstring"
 #include "optional"
 #include "app.h"
 #include "led.h"
@@ -11,9 +10,6 @@ extern uint8_t data[UART_DATA_SIZE];
 extern bool is_received;
 
 enum class Mode {off, steady, flash_double};
-
-constexpr char ERROR_MSG[] = "ERROR\r\n";
-char message[64];
 
 Led<GPIO_PIN_13, Active_level::low> led(GPIOC);
 Blinker_pattern<Led<GPIO_PIN_13, Active_level::low>> steady_blinker(led, steady);
