@@ -129,13 +129,13 @@ template<typename Led_type>
 class Blinker_pattern
 {
 public:
-    Blinker_pattern(
+    explicit  Blinker_pattern(
         Led_type& Led,
         const Blink_pattern& pattern) :
     led_(Led), pattern_(pattern) {}
     void start(uint32_t now)
     {
-        led_.off();
+        led_.on();
         last_switch_time_ = now;
         i = 0;
         is_running_ = true;
@@ -149,7 +149,7 @@ public:
     {
         if (!is_running_)
             return false;
-        if ((now - last_switch_time_) > pattern_[i])
+        if ((now - last_switch_time_) >= pattern_[i])
         {
             led_.toggle();
             last_switch_time_ = now;
@@ -159,7 +159,7 @@ public:
         else
             return false;
     }
-    bool is_running()
+    bool is_running() const noexcept
     {
         return is_running_;
     }
