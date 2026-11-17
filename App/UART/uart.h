@@ -36,7 +36,7 @@ public:
     }
 
     HAL_StatusTypeDef transmit_it(
-        uint8_t* data, size_t size) const
+        const uint8_t* data, size_t size) const
     {
         if (data == nullptr || size == 0 || size > UINT16_MAX)
             return HAL_ERROR;
