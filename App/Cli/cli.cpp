@@ -14,3 +14,17 @@ std::optional<Mode> decode_mode(uint8_t byte)
     }
     return std::nullopt;
 }
+
+constexpr bool is_unique_keys()
+{
+    for (size_t i = 0U; i < commands.size(); i++)
+    {
+        for (size_t j = i + 1U; j < commands.size(); j++)
+        {
+            if (commands[i].key == commands[j].key)
+                return false;
+        }
+    }
+    return true;
+}
+static_assert(is_unique_keys(), "Duplicate UART command");
