@@ -1,32 +1,23 @@
 #include "cstdint"
-#include "optional"
 #include "app.h"
 #include "led.h"
 #include "uart.h"
+#include "cli.h"
 #include "main.h"
+#include "cstring"
+#include "iostream"
 
 extern UART_HandleTypeDef huart1;
 extern uint8_t data[UART_DATA_SIZE];
 extern bool is_received;
 
-enum class Mode {off, steady, flash_double};
-
 Led<GPIO_PIN_13, Active_level::low> led(GPIOC);
 Blinker_pattern<Led<GPIO_PIN_13, Active_level::low>> steady_blinker(led, steady);
 Blinker_pattern<Led<GPIO_PIN_13, Active_level::low>> flash_blinker(led, double_flash);
 Blinker_pattern<Led<GPIO_PIN_13, Active_level::low>>* active_blinker = nullptr;
-Uart uart1(huart1);
 
-std::optional<Mode> decode_mode(uint8_t byte)
-{
-    switch (byte)
-    {
-    case '0': return Mode::off;
-    case '1': return Mode::steady;
-    case '2': return Mode::flash_double;
-    default:  return std::nullopt;
-    }
-}
+Uart uart1(huart1);
+char message[128];
 
 void set_mode(Mode mode, uint32_t now)
 {
@@ -37,6 +28,15 @@ void set_mode(Mode mode, uint32_t now)
     case Mode::off:             break;
     case Mode::steady:          next = &steady_blinker; break;
     case Mode::flash_double:    next = &flash_blinker; break;
+    case Mode::print_help:
+        message[0] = 0;
+        for (uint8_t i = 0; i < commands.size(); i++)
+        {
+            char row[25];
+            sprintf(row, "%c - %s\n", commands[i].key, commands[i].description);
+            strcat(message, row);
+        }
+        uart1.transmit_it(reinterpret_cast<uint8_t*>(message), strlen(message) - 1U);
     }
 
     if (next == active_blinker)

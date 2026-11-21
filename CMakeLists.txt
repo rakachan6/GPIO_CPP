@@ -37,7 +37,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         App/UART/uart.cpp
         App/RingBuffer/ringbuffer.cpp
         App/RingBuffer/ringbuffer.h
-        App/App/app.cpp)
+        App/App/app.cpp
+        App/Cli/cli.cpp)
 
 # Set C++ compile standard
 target_compile_features(GPIO_CPP PRIVATE cxx_std_17)
@@ -61,6 +62,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         App/GPIO/
         App/UART/
         App/App/
+        App/Cli/
 )
 
 # Add project symbols (macros)
